@@ -6,8 +6,10 @@ import { createApp, RedisClient, LIST_KEY } from "./app";
 let app: App;
 let client: RedisClient;
 
+const REDIS_URL = "redis://localhost:6379";
+
 beforeAll(async () => {
-    client = redis.createClient({ url: "redis://localhost:6379" });
+    client = redis.createClient({ url: REDIS_URL });
     await client.connect();
     app = createApp(client);
 });
