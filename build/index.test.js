@@ -31,16 +31,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const supertest_1 = __importDefault(require("supertest"));
 const redis = __importStar(require("redis"));
 const app_1 = require("./app");
-const PORT = 4000;
-const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
-    const client = redis.createClient({ url: "redis://localhost:6379" });
+let app;
+let client;
+beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+    client = redis.createClient({ url: "redis://localhost:6379" });
     yield client.connect();
-    const app = (0, app_1.createApp)(client);
-    app.listen(PORT, () => {
-        console.log(`App listening at port ${PORT}`);
-    });
+    app = (0, app_1.createApp)(client);
+}));
+beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield client.flushDb();
+}));
+describe("POST /messages", () => {
+    it("responds with a success message", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield (0, supertest_1.default)(app)
+            .post("/messages")
+            .send({ message: "testing with redis" });
+        expect(response.statusCode).toBe(200);
+        expect(response.text).toBe("Message added to list.");
+    }));
 });
-startServer();
+describe("GET /messages", () => {
+    it("responds with all message", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield (0, supertest_1.default)(app).get("/messages");
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual([]);
+    }));
+});
