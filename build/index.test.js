@@ -40,7 +40,7 @@ const redis = __importStar(require("redis"));
 const app_1 = require("./app");
 let app;
 let client;
-const REDIS_URL = "redis://localhost:6379";
+const REDIS_URL = "redis://default:test_env@localhost:6380";
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     client = redis.createClient({ url: REDIS_URL });
     yield client.connect();
