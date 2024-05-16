@@ -12,7 +12,9 @@ export const createApp = (client: RedisClient) => {
     app.get("/", (request, response) => {
         response
             .status(200)
-            .send("hello from express, deployed on AWS Lightsail");
+            .send(
+                "hello from express, deployed on AWS Lightsail with solo workflow updae!"
+            );
     });
 
     app.post("/messages", async (request, response) => {
