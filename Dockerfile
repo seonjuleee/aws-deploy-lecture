@@ -1,9 +1,21 @@
-FROM node:22
+# Build Stage
+FROM node:22 as build
 
-# 컨테이너 안으로 파일 복사해야 함
-COPY . .
+COPY package*.json .
 
 RUN npm install
+
+COPY . .
+
 RUN npm run build
+
+# Production Stage
+FROM node:22 as production
+
+COPY --from=build ./build ./build
+COPY --from=build ./package.json ./package.json
+COPY --from=build ./package-lock.json ./package-lock.json
+
+RUN npm install --only=production
 
 CMD ["npm", "start"]
